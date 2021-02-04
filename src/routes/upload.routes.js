@@ -8,7 +8,7 @@ router.post("/", (req, res) => {
     const file = req.files.file;
 
     file.mv(
-        `${__dirname}/../../../checkpoint_04_front/public/upload/${file.name}`,
+        `${__dirname}/../checkpoint_04_front/public/upload/${file.name}`,
         (err) => {
             if (err) {
                 console.log(err);
