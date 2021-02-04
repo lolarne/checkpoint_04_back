@@ -4,8 +4,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 const router = require('./routes/index.routes');
+const fileUpload = require('express-fileupload');
 
 app.use(cors());
 app.use('/api', router);
+app.use(fileUpload({createParentPath: true}));
 
 module.exports = app;
