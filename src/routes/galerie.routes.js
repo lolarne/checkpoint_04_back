@@ -2,7 +2,18 @@ const { connection } = require('../db_connection');
 const router = require('express').Router();
 
 router.get('/', (req, res) => {
-    const sql = "SELECT * FROM illustration";
+    const sql = "SELECT * FROM illustration WHERE validated='1'";
+    connection.query(sql, (err, results) => {
+        if (err) {
+            res.status(500).send({ errorMessage: 'Cannot get the illustrations' });
+        } else {
+            res.status(200).json(results);
+        }
+    });
+});
+
+router.get('/new', (req, res) => {
+    const sql = "SELECT * FROM illustration WHERE validated='0'";
     connection.query(sql, (err, results) => {
         if (err) {
             res.status(500).send({ errorMessage: 'Cannot get the illustrations' });
@@ -56,7 +67,25 @@ router.post('/', (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
+router.put('/:id', (req, res) => {
+    let sql = "UPDATE illustration SET validated=1 WHERE id=?";
+    connection.query(sql, [req.params.id], (err, results) => {
+        if (err) {
+            res.status(500).send({ errorMessage: `Sorry cannot add this illustration, id: ${req.params.id}` });
+        } else {
+            sql = "SELECT * FROM illustration WHERE id=?";
+            connection.query(sql, req.params.id, (err, result) => {
+                if (result.length === 0) {
+                    res.status(404).send({ errorMessage: `Illustration with id: ${req.params.id} not found` });
+                } else {
+                    res.status(200).json(result[0]);
+                }
+            });
+        }
+    });
+});
+
+router.delete('/delete/:id', (req, res) => {
     const sql = "DELETE FROM illustration WHERE id=?";
     connection.query(sql, req.params.id, (err, results) => {
         if (err) {
